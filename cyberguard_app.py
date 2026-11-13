@@ -2,7 +2,7 @@ import os
 import socket
 
 import streamlit as st
-from crewai import Agent, Task
+from crewai import Agent, Crew, Process, Task
 from crewai.tools import tool
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -107,3 +107,24 @@ if st.button("🔍 Start scanning...", type="primary"):
                 expected_output="A standardized Sinhala security report, including a title, findings, and recommendations.",
                 agent=writer,
             )
+
+            # Run the crew
+            cyber_crew = Crew(
+                agents=[analyst, writer],
+                tasks=[scan_task, write_task],
+                process=Process.sequential,
+            )
+
+            try:
+                # Get the results
+                final_report = cyber_crew.kickoff()
+
+                st.success("✅ The test concluded successfully!")
+                st.divider()
+
+                # Sow the final result report
+                st.markdown("### 📊 Your Security Report")
+                st.markdown(final_report.raw)
+
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
