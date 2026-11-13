@@ -27,6 +27,7 @@ if not api_key:
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
 
 
+# Port Scanner Tool
 @tool("Port Scanner Tool")
 def run_port_scanner(target_domain: str) -> str:
     """Use this tool to check for open ports on the specified target domain."""
@@ -50,3 +51,17 @@ def run_port_scanner(target_domain: str) -> str:
         return f"Success! Open ports on {target_domain}: {', '.join(open_ports)}"
     else:
         return f"None of the ports checked on {target_domain} are open."
+
+
+# Streamlit User Interface
+st.write("Enter your website's domain name below.")
+target_url = st.text_input("Domain Name (eg: scanme.nmap.org)", placeholder="example.com")
+
+# The part that activates when the button is pressed
+if st.button("🔍 Start scanning...", type="primary"):
+    
+    if not target_url:
+        st.warning("Please enter a domain name.")
+    else:
+        # Loading Animation
+        with st.spinner(f"The CyberGuard AI team is analyzing {target_url}... This will take about a minute ⏳"):
