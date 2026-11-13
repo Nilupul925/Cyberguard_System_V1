@@ -2,6 +2,7 @@ import os
 import socket
 
 import streamlit as st
+from crewai import Agent
 from crewai.tools import tool
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -55,13 +56,40 @@ def run_port_scanner(target_domain: str) -> str:
 
 # Streamlit User Interface
 st.write("Enter your website's domain name below.")
-target_url = st.text_input("Domain Name (eg: scanme.nmap.org)", placeholder="example.com")
+target_url = st.text_input(
+    "Domain Name (eg: scanme.nmap.org)", placeholder="example.com"
+)
 
 # The part that activates when the button is pressed
 if st.button("🔍 Start scanning...", type="primary"):
-    
+
     if not target_url:
         st.warning("Please enter a domain name.")
     else:
         # Loading Animation
-        with st.spinner(f"The CyberGuard AI team is analyzing {target_url}... This will take about a minute ⏳"):
+        with st.spinner(
+            f"The CyberGuard AI team is analyzing {target_url}... This will take about a minute ⏳"
+        ):
+
+            # CrewAI Agents & Create Tasks
+
+            # Agent 1: Security Analyst (The agent using the tool)
+            analyst = Agent(
+                role="Senior Security Analyst",
+                goal=f"Checking the security of {target_url} and discovering open ports.",
+                backstory="You are a skilled cybersecurity expert who tests the security of servers.",
+                tools=[run_port_scanner],
+                verbose=False,
+                allow_delegation=False,
+                llm=llm,
+            )
+
+            # Agent 2: Report Writer (The agent write the report)
+            writer = Agent(
+                role="Cybersecurity Report Writer",
+                goal="Drafting a security report in simple Sinhala—easily understood by the client—based on the technical data provided by the analyst.",
+                backstory="You are a skilled writer who explains complex technical data in simple Sinhala, in a way that is understandable to the average business person.",
+                verbose=False,
+                allow_delegation=False,
+                llm=llm,
+            )
