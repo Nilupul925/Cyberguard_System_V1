@@ -2,7 +2,7 @@ import os
 import socket
 
 import streamlit as st
-from crewai import Agent
+from crewai import Agent, Task
 from crewai.tools import tool
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -92,4 +92,18 @@ if st.button("🔍 Start scanning...", type="primary"):
                 verbose=False,
                 allow_delegation=False,
                 llm=llm,
+            )
+
+            # Task 1
+            scan_task = Task(
+                description=f'"Check which ports are open on the website "{target_url}". Identify the purpose of these ports.',
+                expected_output="A list of scanned ports and a brief technical summary regarding them.",
+                agent=analyst,
+            )
+
+            # Task 2
+            write_task = Task(
+                description="Using the data provided by the analyst, draft a compelling security report in Sinhala. Clearly explain the potential risks to the business arising from open ports.",
+                expected_output="A standardized Sinhala security report, including a title, findings, and recommendations.",
+                agent=writer,
             )
